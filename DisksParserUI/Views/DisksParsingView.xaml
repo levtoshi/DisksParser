@@ -1,0 +1,79 @@
+﻿<UserControl x:Class="DisksParserUI.Views.DisksParsingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DisksParserUI.Views" xmlns:converters="clr-namespace:DisksParserUI.Converters">
+    <UserControl.Resources>
+        <converters:IntToSecondsConverter x:Key="IntToSecondsConverter"/>
+        <converters:BooleanToStringConverter x:Key="BooleanToStringConverter"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Button Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="120" Height="50" Command="{Binding GoToNextViewCommand}">
+            <Button.Resources>
+                <Style TargetType="Polygon" x:Key="TriangleStyle">
+                    <Setter Property="Fill" Value="White"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource AncestorType=Button}}" Value="False">
+                            <Setter Property="Fill" Value="Gray"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Resources>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Margin="0" FontSize="24">Next</TextBlock>
+                <Polygon Style="{StaticResource TriangleStyle}" Points="16,5 16,30 36,18"></Polygon>
+            </StackPanel>
+        </Button>
+
+        <Grid Grid.Row="1" MinHeight="550" VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.3*"></RowDefinition>
+                <RowDefinition Height="1.5*"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Command="{Binding StartOrRestartCommand}">
+                    <TextBlock FontSize="28" Text="{Binding IsStarted, Converter={StaticResource BooleanToStringConverter}}"></TextBlock>
+                </Button>
+                <Button Grid.Column="1" Command="{Binding StopCommand}">
+                    <TextBlock FontSize="28">Stop</TextBlock>
+                </Button>
+                <Button Grid.Column="2" Command="{Binding AbortCommand}">
+                    <TextBlock FontSize="28">Abort</TextBlock>
+                </Button>
+            </Grid>
+
+            <Grid Grid.Row="1" Margin="0,40,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="{Binding AmountOfSecondsParsing, Converter={StaticResource IntToSecondsConverter}}"></TextBlock>
+
+                <ProgressBar Grid.Row="1" Margin="50,20" Minimum="0" Value="{Binding AmountOfFilesChecked, Mode=OneWay}" Maximum="{Binding MaxAmountOfFiles}"></ProgressBar>
+
+                <TextBlock Grid.Row="2" TextAlignment="Left" Text="{Binding AmountOfFilesChecked, StringFormat='Total text files checked: {0}'}"></TextBlock>
+
+                <TextBlock Grid.Row="3" TextAlignment="Left" Text="{Binding AmountOfFilesBanned, StringFormat='Total files banned: {0}'}"></TextBlock>
+
+                <TextBlock Grid.Row="4" TextAlignment="Left" Text="{Binding AmountOfWordsHidden, StringFormat='Total words hidden: {0}'}"></TextBlock>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

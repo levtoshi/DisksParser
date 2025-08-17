@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="DisksParserUI.Views.ParsingResultsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DisksParserUI.Views">
+    <Grid MinHeight="650" VerticalAlignment="Center">
+        <Grid Grid.Row="1" Margin="0,40,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1.2*"></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="1.2*"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" FontWeight="Bold" Margin="0,0,0,20">Parsing Results</TextBlock>
+
+            <TextBlock Grid.Row="1" TextAlignment="Left" Text="{Binding DisksChecked, StringFormat='Disks checked: {0}'}"></TextBlock>
+
+            <TextBlock Grid.Row="2" TextAlignment="Left" Text="{Binding AmountOfFoldersChecked, StringFormat='Total folders checked: {0}'}"></TextBlock>
+
+            <TextBlock Grid.Row="3" TextAlignment="Left" Text="{Binding AmountOfFilesChecked, StringFormat='Total text files checked: {0}'}"></TextBlock>
+
+            <TextBlock Grid.Row="4" TextAlignment="Left" Text="{Binding AmountOfFilesBanned, StringFormat='Total files banned: {0}'}"></TextBlock>
+
+            <TextBlock Grid.Row="5" Margin="30,0,30,20" TextAlignment="Left" Text="{Binding AmountOfWordsHidden, StringFormat='Total words hidden: {0}'}"></TextBlock>
+
+            <Button Grid.Row="6" Command="{Binding MoreInfoCommand}">
+                <TextBlock FontSize="28">More Info</TextBlock>
+            </Button>
+        </Grid>
+    </Grid>
+</UserControl>

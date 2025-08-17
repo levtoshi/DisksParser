@@ -1,0 +1,51 @@
+﻿<UserControl x:Class="DisksParserUI.Views.FilesCountingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DisksParserUI.Views" xmlns:converters="clr-namespace:DisksParserUI.Converters">
+    <UserControl.Resources>
+        <converters:IntToSecondsConverter x:Key="IntToSecondsConverter"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Button Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="120" Height="50" Command="{Binding GoToNextViewCommand}">
+            <Button.Resources>
+                <Style TargetType="Polygon" x:Key="TriangleStyle">
+                    <Setter Property="Fill" Value="White"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource AncestorType=Button}}" Value="False">
+                            <Setter Property="Fill" Value="Gray"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Resources>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Margin="0" FontSize="24">Next</TextBlock>
+                <Polygon Style="{StaticResource TriangleStyle}" Points="16,5 16,30 36,18"></Polygon>
+            </StackPanel>
+        </Button>
+
+        <Grid Grid.Row="1" MinHeight="350" VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="0.8*"></RowDefinition>
+                <RowDefinition Height="0.8*"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Button Grid.Row="0" Command="{Binding CountingCommand}">Count files</Button>
+
+            <TextBlock Grid.Row="1" Text="{Binding AmountOfSecondsExecuting, Converter={StaticResource IntToSecondsConverter}}"></TextBlock>
+
+            <TextBlock Grid.Row="2" TextAlignment="Left" Text="{Binding TotalFoldersCounted, StringFormat='Total folders counted: {0}'}"></TextBlock>
+
+            <TextBlock Grid.Row="3" TextAlignment="Left" Text="{Binding TotalFilesCounted, StringFormat='Total text files counted: {0}'}"></TextBlock>
+        </Grid>
+    </Grid>
+</UserControl>
