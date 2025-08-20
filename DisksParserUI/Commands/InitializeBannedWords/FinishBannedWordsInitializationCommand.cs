@@ -7,22 +7,20 @@ using System.ComponentModel;
 
 namespace DisksParserUI.Commands.InitializeBannedWords
 {
-    public class FinishBannedWordsInitializationCommand : AsyncCommandBase
+    public class FinishBannedWordsInitializationCommand : AsyncCommandBase, IDisposable
     {
         private readonly InitializeBannedWordsViewModel _initializeBannedWordsViewModel;
         private readonly IInitializeBannedWordsService _initializeBannedWordsService;
-        private readonly INavigationService _navigationService;
-        private readonly DisksStatistic _disksStatistic;
+        private readonly INavigationService<InitializeParsingSettingsViewModel> _navigationService;
         private readonly ParsingSettingsContext _parsingSettingsContext;
 
-        public FinishBannedWordsInitializationCommand(InitializeBannedWordsViewModel initializeBannedWordsViewModel, IInitializeBannedWordsService initializeBannedWordsService, INavigationService navigationService, DisksStatistic disksStatistic, ParsingSettingsContext parsingSettingsContext)
+        public FinishBannedWordsInitializationCommand(InitializeBannedWordsViewModel initializeBannedWordsViewModel, IInitializeBannedWordsService initializeBannedWordsService, INavigationService<InitializeParsingSettingsViewModel> navigationService, ParsingSettingsContext parsingSettingsContext)
         {
             _initializeBannedWordsViewModel = initializeBannedWordsViewModel;
             _initializeBannedWordsViewModel.PropertyChanged += OnViewModelPropertyChanged;
 
             _initializeBannedWordsService = initializeBannedWordsService;
             _navigationService = navigationService;
-            _disksStatistic = disksStatistic;
             _parsingSettingsContext = parsingSettingsContext;
         }
 
@@ -33,7 +31,7 @@ namespace DisksParserUI.Commands.InitializeBannedWords
                 await _initializeBannedWordsService.SplitBannedWordsText(_initializeBannedWordsViewModel.BannedWordsText);
                 Thread.Sleep(10);
             }
-            _navigationService.NavigateTo<InitializeParsingSettingsViewModel>(_navigationService, _disksStatistic, _parsingSettingsContext);
+            _navigationService.Navigate();
         }
 
         public override bool CanExecute(object? parameter)
@@ -49,10 +47,9 @@ namespace DisksParserUI.Commands.InitializeBannedWords
             }
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
             _initializeBannedWordsViewModel.PropertyChanged -= OnViewModelPropertyChanged;
-            base.Dispose();
         }
     }
 }

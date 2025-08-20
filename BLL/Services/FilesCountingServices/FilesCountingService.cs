@@ -1,8 +1,9 @@
-﻿using BLL.Models;
+﻿using BLL.InterfaceAccessors;
+using BLL.Models;
 
 namespace BLL.Services.FilesCountingServices
 {
-    public class FilesCountingService : IFilesCountingService
+    public class FilesCountingService : IFilesCountingService, IDisposable
     {
         private readonly DisksStatistic _disksStatistic;
         private readonly Timer _timerCounting;
@@ -10,9 +11,9 @@ namespace BLL.Services.FilesCountingServices
         private readonly CancellationTokenSource _disposeCancellationTokenSource;
         private readonly CancellationToken _disposeCancellationToken;
 
-        public FilesCountingService(DisksStatistic disksStatistic)
+        public FilesCountingService(IDisksStatisticAccessor disksStatisticAccessor)
         {
-            _disksStatistic = disksStatistic;
+            _disksStatistic = disksStatisticAccessor.GetDisksStatistic();
             _timerCounting = new Timer(_disksStatistic.IncrementAmountOfSecondsExecuting);
             _disposeCancellationTokenSource = new CancellationTokenSource();
             _disposeCancellationToken = _disposeCancellationTokenSource.Token;
@@ -72,9 +73,13 @@ namespace BLL.Services.FilesCountingServices
 
         public void Dispose()
         {
-            _timerCounting.Dispose();
-            _disposeCancellationTokenSource.Cancel();
-            _disposeCancellationTokenSource.Dispose();
+            try
+            {
+                _timerCounting.Dispose();
+                _disposeCancellationTokenSource.Cancel();
+                _disposeCancellationTokenSource.Dispose();
+            }
+            catch { }
         }
     }
 }

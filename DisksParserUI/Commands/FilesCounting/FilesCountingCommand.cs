@@ -26,9 +26,9 @@ namespace DisksParserUI.Commands.FilesCounting
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public FilesCountingCommand(DisksStatistic disksStatistic)
+        public FilesCountingCommand(IFilesCountingService filesCountingService)
         {
-            _filesCountingService = new FilesCountingService(disksStatistic);
+            _filesCountingService = filesCountingService;
             IsExecuted = false;
         }
 
@@ -46,12 +46,6 @@ namespace DisksParserUI.Commands.FilesCounting
         public override bool CanExecute(object parameter)
         {
             return !IsExecuted && base.CanExecute(parameter);
-        }
-
-        public override void Dispose()
-        {
-            _filesCountingService.Dispose();
-            base.Dispose();
         }
     }
 }

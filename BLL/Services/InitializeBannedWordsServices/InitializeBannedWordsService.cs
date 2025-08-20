@@ -1,4 +1,5 @@
-﻿using BLL.Models;
+﻿using BLL.InterfaceAccessors;
+using BLL.Models;
 
 namespace BLL.Services.InitializeBannedWordsServices
 {
@@ -6,9 +7,9 @@ namespace BLL.Services.InitializeBannedWordsServices
     {
         private readonly ParsingSettingsContext _parsingSettingsContext;
 
-        public InitializeBannedWordsService(ParsingSettingsContext parsingSettingsContext)
+        public InitializeBannedWordsService(IParsingSettingsContextAccessor parsingSettingsContextAccessor)
         {
-            _parsingSettingsContext = parsingSettingsContext;
+            _parsingSettingsContext = parsingSettingsContextAccessor.GetParsingSettingsContext();
         }
 
         public async Task ReadBannedWordsFile(string path)

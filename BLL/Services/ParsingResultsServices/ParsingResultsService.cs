@@ -1,4 +1,5 @@
-﻿using BLL.Models;
+﻿using BLL.InterfaceAccessors;
+using BLL.Models;
 using System.Diagnostics;
 using System.Text;
 
@@ -11,10 +12,10 @@ namespace BLL.Services.ParsingResultsServices
 
         private readonly string _detailsFileName = "Details";
 
-        public ParsingResultsService(DisksParsingStatistic disksParsingStatistic, ParsingSettingsContext parsingSettingsContext)
+        public ParsingResultsService(IDisksParsingStatisticAccessor disksParsingStatisticAccessor, IParsingSettingsContextAccessor parsingSettingsContextAccessor)
         {
-            _disksParsingStatistic = disksParsingStatistic;
-            _parsingSettingsContext = parsingSettingsContext;
+            _disksParsingStatistic = disksParsingStatisticAccessor.GetDisksParsingStatistic();
+            _parsingSettingsContext = parsingSettingsContextAccessor.GetParsingSettingsContext();
         }
 
         public async Task FormMoreInfoFile()

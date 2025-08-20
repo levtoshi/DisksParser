@@ -5,7 +5,7 @@
         Task StartParsing();
         void StopParsing();
         void RestartParsing();
-        Task Dispose();
-        void DisposeOnExit();
+        Task DisposeOnAbort();
+        void Dispose();
     }
 }

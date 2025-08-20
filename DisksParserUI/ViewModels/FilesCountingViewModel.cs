@@ -1,7 +1,9 @@
 ﻿using BLL.Models;
+using BLL.Services.FilesCountingServices;
 using DisksParserUI.Commands.BaseCommands;
 using DisksParserUI.Commands.FilesCounting;
 using DisksParserUI.Navigation.Services;
+using DisksParserUI.Stores;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows.Input;
@@ -43,22 +45,20 @@ namespace DisksParserUI.ViewModels
         public FilesCountingCommand CountingCommand { get; }
         public ICommand GoToNextViewCommand { get; }
 
-        public FilesCountingViewModel(INavigationService navigationService)
+        public FilesCountingViewModel(INavigationService<InitializeParsingSettingsViewModel> navigationService, IFilesCountingService filesCountingService, DisksStatisticStore disksStatisticStore)
         {
-            _disksStatistic = new DisksStatistic();
+            _disksStatistic = disksStatisticStore.DisksStatisticObject;
             _disksStatistic.PropertyChanged += OnDisksStatisticPropertyChanged;
             _disksStatistic.FilesPathes.CollectionChanged += OnFilePathesChanged;
 
-            CountingCommand = new FilesCountingCommand(_disksStatistic);
+            CountingCommand = new FilesCountingCommand(filesCountingService);
 
             GoToNextViewCommand = new RelayCommand(
-                (object? p) => navigationService.NavigateTo<InitializeParsingSettingsViewModel>(navigationService, _disksStatistic, new ParsingSettingsContext()),
+                (object? p) => navigationService.Navigate(),
                 (object? p) => CountingCommand.IsExecuted);
 
             CountingCommand.PropertyChanged += OnCountingCommandPropertyChanged;
         }
-
-
 
         private void OnDisksStatisticPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
@@ -91,7 +91,6 @@ namespace DisksParserUI.ViewModels
             _disksStatistic.FilesPathes.CollectionChanged -= OnFilePathesChanged;
 
             CountingCommand.PropertyChanged -= OnCountingCommandPropertyChanged;
-            CountingCommand.Dispose();
 
             base.Dispose();
         }

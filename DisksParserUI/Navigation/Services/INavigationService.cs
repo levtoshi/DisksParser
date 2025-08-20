@@ -2,8 +2,8 @@
 
 namespace DisksParserUI.Navigation.Services
 {
-    public interface INavigationService
+    public interface INavigationService<TViewModel> where TViewModel : ViewModelBase
     {
-        void NavigateTo<TViewModel>(params object[] parameters) where TViewModel : ViewModelBase;
+        void Navigate();
     }
 }

@@ -4,6 +4,7 @@ using DisksParserUI.Commands.InitializeBannedWords;
 using DisksParserUI.Commands.BaseCommands;
 using DisksParserUI.Navigation.Services;
 using System.Windows.Input;
+using DisksParserUI.Stores;
 
 namespace DisksParserUI.ViewModels
 {
@@ -27,21 +28,24 @@ namespace DisksParserUI.ViewModels
         public ICommand ContinueCommand { get; }
         public ICommand GoToPreviousViewCommand { get; }
 
-        public InitializeBannedWordsViewModel(INavigationService navigationService, DisksStatistic disksStatistic, ParsingSettingsContext parsingSettingsContext)
+        public InitializeBannedWordsViewModel(INavigationService<InitializeParsingSettingsViewModel> navigationService, IInitializeBannedWordsService initializeBannedWordsService, ParsingSettingsContextStore parsingSettingsContextStore)
         {
-            IInitializeBannedWordsService initializeBannedWordsService = new InitializeBannedWordsService(parsingSettingsContext);
+            ParsingSettingsContext parsingSettingsContext = parsingSettingsContextStore.ParsingSettingsContextObject;
 
             BannedWordsText = (parsingSettingsContext.BannedWords.Count > 0) ? String.Join(" ", parsingSettingsContext.BannedWords.Select(w => w.Word)) : "";
             InitializeFileCommand = new InitializeFileWithBannedWordsCommand(this, initializeBannedWordsService, parsingSettingsContext);
 
-            ContinueCommand = new FinishBannedWordsInitializationCommand(this, initializeBannedWordsService, navigationService, disksStatistic, parsingSettingsContext);
+            ContinueCommand = new FinishBannedWordsInitializationCommand(this, initializeBannedWordsService, navigationService, parsingSettingsContext);
 
-            GoToPreviousViewCommand = new RelayCommand((object? s) => navigationService.NavigateTo<InitializeParsingSettingsViewModel>(navigationService, disksStatistic, parsingSettingsContext));
+            GoToPreviousViewCommand = new RelayCommand((object? s) => navigationService.Navigate());
         }
 
         public override void Dispose()
         {
-            (ContinueCommand as CommandBase).Dispose();
+            if (ContinueCommand is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
             base.Dispose();
         }
     }

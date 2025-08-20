@@ -3,25 +3,24 @@ using DisksParserUI.ViewModels;
 
 namespace DisksParserUI.Navigation.Services
 {
-    public class NavigationService : INavigationService
+    public class NavigationService<TViewModel> : INavigationService<TViewModel> where TViewModel : ViewModelBase
     {
         private readonly NavigationStore _navigationStore;
+        private readonly Func<TViewModel> _createViewModel;
 
-        public NavigationService(NavigationStore navigationStore)
+        public NavigationService(NavigationStore navigationStore, Func<TViewModel> createViewModel)
         {
             _navigationStore = navigationStore;
+            _createViewModel = createViewModel;
         }
 
-        public void NavigateTo<TViewModel>(params object[] parameters) where TViewModel : ViewModelBase
+        public void Navigate()
         {
-            _navigationStore.CurrentViewModel.Dispose();
-
-            ViewModelBase viewModel = (TViewModel)Activator.CreateInstance(typeof(TViewModel), parameters);
-
-            if (viewModel != null)
+            if (_navigationStore.CurrentViewModel != null)
             {
-                _navigationStore.CurrentViewModel = viewModel;
+                _navigationStore.CurrentViewModel.Dispose();
             }
+            _navigationStore.CurrentViewModel = _createViewModel();
         }
     }
 }

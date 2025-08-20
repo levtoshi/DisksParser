@@ -5,12 +5,12 @@ using DisksParserUI.Navigation.Services;
 using System.ComponentModel;
 using System.Windows.Input;
 using DisksParserUI.Commands.BaseCommands;
+using DisksParserUI.Stores;
 
 namespace DisksParserUI.ViewModels
 {
     public class DisksParsingViewModel : ViewModelBase
     {
-        private readonly IDisksParsingService _disksParsingService;
         private readonly DisksParsingStatistic _disksParsingStatistic;
         private readonly DisksParsingControlContext _disksParsingControlContext;
 
@@ -70,22 +70,20 @@ namespace DisksParserUI.ViewModels
         public ICommand GoToNextViewCommand { get; }
 
 
-        public DisksParsingViewModel(INavigationService navigationService, DisksStatistic disksStatistic, ParsingSettingsContext parsingSettingsContext)
+        public DisksParsingViewModel(INavigationService<ParsingResultsViewModel> navigationService, IDisksParsingService disksParsingService, DisksStatisticStore disksStatisticStore, DisksParsingStatisticStore disksParsingStatisticStore, DisksParsingControlContextStore disksParsingControlContextStore)
         {
-            _disksParsingStatistic = new DisksParsingStatistic();
-            _disksParsingControlContext = new DisksParsingControlContext();
-            MaxAmountOfFiles = disksStatistic.FilesPathes.Count;
+            _disksParsingStatistic = disksParsingStatisticStore.DisksParsingStatisticObject;
+            _disksParsingControlContext = disksParsingControlContextStore.DisksParsingControlContextObject;
+            MaxAmountOfFiles = disksStatisticStore.DisksStatisticObject.FilesPathes.Count;
 
-            _disksParsingService = new DisksParsingService(disksStatistic, _disksParsingStatistic, parsingSettingsContext, _disksParsingControlContext);
-
-            _startCommand = new StartParsingCommand(_disksParsingService);
-            _restartCommand = new RestartParsingCommand(_disksParsingService, _disksParsingControlContext);
+            _startCommand = new StartParsingCommand(disksParsingService);
+            _restartCommand = new RestartParsingCommand(disksParsingService, _disksParsingControlContext);
 
             StartOrRestartCommand = _startCommand;
-            StopCommand = new StopParsingCommand(_disksParsingService, _disksParsingControlContext);
-            AbortCommand = new AbortParsingCommand(_disksParsingService, _disksParsingControlContext);
+            StopCommand = new StopParsingCommand(disksParsingService, _disksParsingControlContext);
+            AbortCommand = new AbortParsingCommand(disksParsingService, _disksParsingControlContext);
             GoToNextViewCommand = new RelayCommand(
-                (object? s) => navigationService.NavigateTo<ParsingResultsViewModel>(disksStatistic, _disksParsingStatistic, parsingSettingsContext),
+                (object? s) => navigationService.Navigate(),
                 (object? s) => _disksParsingControlContext.IsEnded);
 
             _disksParsingControlContext.PropertyChanged += OnControlContextPropertyChanged;
@@ -128,14 +126,21 @@ namespace DisksParserUI.ViewModels
 
         public override void Dispose()
         {
-            _disksParsingService.DisposeOnExit();
-
             _disksParsingControlContext.PropertyChanged -= OnControlContextPropertyChanged;
             _disksParsingStatistic.PropertyChanged -= OnParsingStatisticPropertyChanged;
 
-            (_restartCommand as CommandBase).Dispose();
-            (StopCommand as CommandBase).Dispose();
-            (AbortCommand as CommandBase).Dispose();
+            if (_restartCommand is IDisposable disposable1)
+            {
+                disposable1.Dispose();
+            }
+            if (StopCommand is IDisposable disposable2)
+            {
+                disposable2.Dispose();
+            }
+            if (AbortCommand is IDisposable disposable3)
+            {
+                disposable3.Dispose();
+            }
 
             base.Dispose();
         }

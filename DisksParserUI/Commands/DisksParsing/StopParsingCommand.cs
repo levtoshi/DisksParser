@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 namespace DisksParserUI.Commands.DisksParsing
 {
-    public class StopParsingCommand : CommandBase
+    public class StopParsingCommand : CommandBase, IDisposable
     {
         private readonly IDisksParsingService _disksParsingService;
         private readonly DisksParsingControlContext _disksParsingControlContext;
@@ -36,10 +36,9 @@ namespace DisksParserUI.Commands.DisksParsing
             OnCanExecutedChanged();
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
             _disksParsingControlContext.PropertyChanged -= OnControlContextPropertyChanged;
-            base.Dispose();
         }
     }
 }

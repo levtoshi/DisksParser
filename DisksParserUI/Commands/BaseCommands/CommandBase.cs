@@ -21,7 +21,5 @@ namespace DisksParserUI.Commands.BaseCommands
                 CanExecuteChanged?.Invoke(this, new EventArgs());
             });
         }
-
-        public virtual void Dispose() { }
     }
 }

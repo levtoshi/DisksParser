@@ -7,20 +7,16 @@ namespace DisksParserUI.Commands.InitializeParsingSettings
 {
     public class InitializeBannedWordsCommand : CommandBase
     {
-        private readonly INavigationService _navigationService;
-        private readonly DisksStatistic _disksStatistic;
-        private readonly ParsingSettingsContext _parsingSettingsContext;
+        private readonly INavigationService<InitializeBannedWordsViewModel> _navigateToBannedWordsService;
 
-        public InitializeBannedWordsCommand(INavigationService navigationService, DisksStatistic disksStatistic, ParsingSettingsContext parsingSettingsContext)
+        public InitializeBannedWordsCommand(INavigationService<InitializeBannedWordsViewModel> navigateToBannedWordsService)
         {
-            _navigationService = navigationService;
-            _disksStatistic = disksStatistic;
-            _parsingSettingsContext = parsingSettingsContext;
+            _navigateToBannedWordsService = navigateToBannedWordsService;
         }
 
         public override void Execute(object? parameter)
         {
-            _navigationService.NavigateTo<InitializeBannedWordsViewModel>(_navigationService, _disksStatistic, _parsingSettingsContext);
+            _navigateToBannedWordsService.Navigate();
         }
     }
 }

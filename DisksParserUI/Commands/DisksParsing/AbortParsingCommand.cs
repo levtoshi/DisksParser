@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace DisksParserUI.Commands.DisksParsing
 {
-    public class AbortParsingCommand : AsyncCommandBase
+    public class AbortParsingCommand : AsyncCommandBase, IDisposable
     {
         private readonly IDisksParsingService _disksParsingService;
         private readonly DisksParsingControlContext _disksParsingControlContext;
@@ -23,7 +23,7 @@ namespace DisksParserUI.Commands.DisksParsing
         {
             if (MessageBox.Show(_abortQuestion, "Question", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                await _disksParsingService.Dispose();
+                await _disksParsingService.DisposeOnAbort();
             }
         }
         public override bool CanExecute(object parameter)
@@ -42,10 +42,9 @@ namespace DisksParserUI.Commands.DisksParsing
             }
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
             _disksParsingControlContext.PropertyChanged -= OnControlContextPropertyChanged;
-            base.Dispose();
         }
     }
 }

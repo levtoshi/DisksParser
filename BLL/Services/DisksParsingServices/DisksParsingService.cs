@@ -1,9 +1,10 @@
-﻿using BLL.Models;
+﻿using BLL.InterfaceAccessors;
+using BLL.Models;
 using System.Text.RegularExpressions;
 
 namespace BLL.Services.DisksParsingServices
 {
-    public class DisksParsingService : IDisksParsingService
+    public class DisksParsingService : IDisksParsingService, IDisposable
     {
         private readonly DisksStatistic _disksStatistic;
         private readonly DisksParsingStatistic _disksParsingStatistic;
@@ -16,12 +17,12 @@ namespace BLL.Services.DisksParsingServices
 
         private Timer _timerCounting;
 
-        public DisksParsingService(DisksStatistic disksStatistic, DisksParsingStatistic disksParsingStatistic, ParsingSettingsContext parsingSettingsContext, DisksParsingControlContext disksParsingControlContext)
+        public DisksParsingService(IDisksStatisticAccessor disksStatisticAccessor, IParsingSettingsContextAccessor parsingSettingsContextAccessor, IDisksParsingStatisticAccessor disksParsingStatisticAccessor, IDisksParsingControlContextAccessor disksParsingControlContextAccessor)
         {
-            _disksStatistic = disksStatistic;
-            _disksParsingStatistic = disksParsingStatistic;
-            _parsingSettingsContext = parsingSettingsContext;
-            _disksParsingControlContext = disksParsingControlContext;
+            _disksStatistic = disksStatisticAccessor.GetDisksStatistic();
+            _parsingSettingsContext = parsingSettingsContextAccessor.GetParsingSettingsContext();
+            _disksParsingStatistic = disksParsingStatisticAccessor.GetDisksParsingStatistic();
+            _disksParsingControlContext = disksParsingControlContextAccessor.GetDisksParsingControlContext();
         }
 
         public async Task StartParsing()
@@ -202,7 +203,7 @@ namespace BLL.Services.DisksParsingServices
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        public async Task Dispose()
+        public async Task DisposeOnAbort()
         {
             _disksParsingControlContext.IsAborted = true;
 
@@ -230,22 +231,22 @@ namespace BLL.Services.DisksParsingServices
             _disksParsingControlContext.IsStarted = false;
         }
 
-        public void DisposeOnExit()
+        public void Dispose()
         {
-            _timerCounting.Dispose();
-
             try
             {
                 _disksParsingControlContext.ControlContextCancellationTokenSource.Cancel();
                 _disksParsingControlContext.ControlContextCancellationTokenSource.Dispose();
+
+                if (!_disksParsingControlContext.StopHandle.IsSet)
+                {
+                    _disksParsingControlContext.StopHandle.Set();
+                }
+                DisposeEventHandlers();
+
+                _timerCounting.Dispose();
             }
             catch { }
-
-            if (!_disksParsingControlContext.StopHandle.IsSet)
-            {
-                _disksParsingControlContext.StopHandle.Set();
-            }
-            DisposeEventHandlers();
         }
 
         private void DeleteFolder()

@@ -9,9 +9,9 @@ namespace DisksParserUI.Commands.ParsingResults
         private readonly IParsingResultsService _parsingResultsService;
         private readonly ParsingSettingsContext _parsingSettingsContext;
 
-        public ShowMoreInfoCommand(DisksParsingStatistic disksParsingStatistic, ParsingSettingsContext parsingSettingsContext)
+        public ShowMoreInfoCommand(IParsingResultsService parsingResultsService, ParsingSettingsContext parsingSettingsContext)
         {
-            _parsingResultsService = new ParsingResultsService(disksParsingStatistic, parsingSettingsContext);
+            _parsingResultsService = parsingResultsService;
             _parsingSettingsContext = parsingSettingsContext;
         }
 

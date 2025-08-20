@@ -4,6 +4,7 @@ using DisksParserUI.Commands.BaseCommands;
 using DisksParserUI.Navigation.Services;
 using System.ComponentModel;
 using System.Windows.Input;
+using DisksParserUI.Stores;
 
 namespace DisksParserUI.ViewModels
 {
@@ -34,14 +35,14 @@ namespace DisksParserUI.ViewModels
         public ICommand GoToNextViewCommand { get; }
 
 
-        public InitializeParsingSettingsViewModel(INavigationService navigationService, DisksStatistic disksStatistic, ParsingSettingsContext parsingSettingsContext)
+        public InitializeParsingSettingsViewModel(INavigationService<DisksParsingViewModel> navigateToDisksParsingService, INavigationService<InitializeBannedWordsViewModel> navigateToBannedWordsService, ParsingSettingsContextStore parsingSettingsContextStore)
         {
-            _parsingSettingsContext = parsingSettingsContext;
-            InitializeWordsCommand = new InitializeBannedWordsCommand(navigationService, disksStatistic, _parsingSettingsContext);
+            _parsingSettingsContext = parsingSettingsContextStore.ParsingSettingsContextObject;
+            InitializeWordsCommand = new InitializeBannedWordsCommand(navigateToBannedWordsService);
             InitializeFolderCommand = new InitializeCopyFolderCommand(_parsingSettingsContext);
 
             GoToNextViewCommand = new RelayCommand(
-                (object? s) => navigationService.NavigateTo<DisksParsingViewModel>(navigationService, disksStatistic, _parsingSettingsContext),
+                (object? s) => navigateToDisksParsingService.Navigate(),
                 (object? s) => _parsingSettingsContext.BannedWords.Count > 0 && _parsingSettingsContext.CopyFolder != null);
 
             _parsingSettingsContext.PropertyChanged += OnParsingSettingsPropertyChanged;
