@@ -1,5 +1,4 @@
-﻿using BLL.Models;
-using BLL.Services.ParsingResultsServices;
+﻿using BLL.Services.ParsingResultsServices;
 using DisksParserUI.Commands.ParsingResults;
 using DisksParserUI.Stores;
 using System.Windows.Input;
